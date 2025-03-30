@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/bloomfieldHours/static/css/main.f855e6bc.css",
+    "main.js": "/bloomfieldHours/static/js/main.9923d09d.js",
+    "static/js/453.89ab499e.chunk.js": "/bloomfieldHours/static/js/453.89ab499e.chunk.js",
+    "static/media/logo.svg": "/bloomfieldHours/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/bloomfieldHours/index.html",
+    "main.f855e6bc.css.map": "/bloomfieldHours/static/css/main.f855e6bc.css.map",
+    "main.9923d09d.js.map": "/bloomfieldHours/static/js/main.9923d09d.js.map",
+    "453.89ab499e.chunk.js.map": "/bloomfieldHours/static/js/453.89ab499e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.9923d09d.js"
+  ]
+}
