@@ -69,7 +69,7 @@ const parseTimeToJSDate = (time: string): Date => {
 };
 const StoreTable: React.FC = () => {
     const [search, setSearch] = useState<string>("");
-    const [dayFilter, setDayFilter] = useState<string>("All");
+    const [dayFilter, setDayFilter] = useState<string>("Current Day");
     const [openFilter, setOpenFilter] = useState<string>("All");
 
     const filteredData = useMemo(() => {
