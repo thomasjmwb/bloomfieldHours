@@ -83,48 +83,69 @@ const StoreTable: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [dayFilter, setDayFilter] = useState<string>("Current Day");
   const [openFilter, setOpenFilter] = useState<string>("All");
+  const [onlyFavs, setOnlyFavs] = useState<string>("All");
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  const [favorites, setFavorites] = useState<{ [k: string]: boolean }>(
+    JSON.parse(localStorage.getItem("favorites") ?? "{}")
+  );
   const filteredData = useMemo(() => {
-    return storeData.filter((store) => {
-      if (search && !store.name.toLowerCase().includes(search.toLowerCase()))
-        return false;
-      if (openFilter === "Open Now") {
-        const today = dayFilter === "Current Day" ? getCurrentDay() : dayFilter;
-        const now = getCurrentTime();
-        const { open, close } = store.hours[today] || {};
-        const parsedOpen = parseTimeToJSDate(open);
-        const parsedClose = parseTimeToJSDate(close);
-        const parsedNow = parseTimeToJSDate(now);
-        if (!(parsedNow >= parsedOpen && parsedNow <= parsedClose))
+    return storeData
+      .filter((store) => {
+        if (onlyFavs === "Favorites" && !favorites[store.name]) return false;
+        if (search && !store.name.toLowerCase().includes(search.toLowerCase()))
           return false;
-      }
-      return true;
-    });
-  }, [search, dayFilter, openFilter]);
-
-  const columns: ColumnDef<Store>[] = [
-    { accessorKey: "name", header: "Store Name" },
-    {
-      accessorKey: "hours",
-      header: "Hours",
-      cell: ({ row }) => {
-        const today = dayFilter === "Current Day" ? getCurrentDay() : dayFilter;
-        const { open, close } = row.original.hours[today] || {};
-        return `${open} - ${close}`;
-      },
-      sortingFn: (a, b, c) => {
-        const [aClosing, bClosing] = [a, b].map((row) => {
+        if (openFilter === "Open Now") {
           const today =
             dayFilter === "Current Day" ? getCurrentDay() : dayFilter;
-          const { close } = row.original.hours[today] || {};
+          const now = getCurrentTime();
+          const { open, close } = store.hours[today] || {};
+          const parsedOpen = parseTimeToJSDate(open);
           const parsedClose = parseTimeToJSDate(close);
-          return parsedClose;
-        });
-        return aClosing.getTime() - bClosing.getTime();
+          const parsedNow = parseTimeToJSDate(now);
+          if (!(parsedNow >= parsedOpen && parsedNow <= parsedClose))
+            return false;
+        }
+        return true;
+      })
+      .map((store) => {
+        return {
+          ...store,
+          favorite: favorites[store.name] || false,
+        };
+      });
+  }, [search, dayFilter, openFilter, favorites, onlyFavs]);
+
+  const columns: ColumnDef<Store & { favorite: boolean }>[] = useMemo(() => {
+    return [
+      {
+        accessorKey: "favorite",
+        id: "favorites",
+        header: "Favorites",
       },
-    },
-  ];
+      { accessorKey: "name", header: "Store Name" },
+      {
+        accessorKey: "hours",
+        header: "Hours",
+        cell: ({ row }) => {
+          const today =
+            dayFilter === "Current Day" ? getCurrentDay() : dayFilter;
+          const { open, close } = row.original.hours[today] || {};
+          return `${open} - ${close}`;
+        },
+        sortingFn: (a, b, c) => {
+          const [aClosing, bClosing] = [a, b].map((row) => {
+            const today =
+              dayFilter === "Current Day" ? getCurrentDay() : dayFilter;
+            const { close } = row.original.hours[today] || {};
+            const parsedClose = parseTimeToJSDate(close);
+            return parsedClose;
+          });
+          return aClosing.getTime() - bClosing.getTime();
+        },
+      },
+    ];
+  }, [favorites]);
 
   const table = useReactTable({
     data: filteredData,
@@ -165,6 +186,14 @@ const StoreTable: React.FC = () => {
             { value: "Open Now", label: "Open Now" },
           ]}
         />
+        <Select
+          value={onlyFavs}
+          onChange={setOnlyFavs}
+          options={[
+            { value: "Favorites", label: "Only Favorites" },
+            { value: "All", label: "All" },
+          ]}
+        />
       </div>
       <table className="w-full border-collapse border border-gray-200">
         <thead>
@@ -202,8 +231,31 @@ const StoreTable: React.FC = () => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="border">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border p-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <td
+                  key={cell.id}
+                  className="border p-2"
+                  onClick={() => {
+                    if (cell.column.id !== "favorites") return;
+                    const storeName = cell.row.original.name;
+                    const isFavorite = favorites[storeName];
+                    const updatedFavorites = {
+                      ...favorites,
+                      [storeName]: !isFavorite,
+                    };
+                    localStorage.setItem(
+                      "favorites",
+                      JSON.stringify(updatedFavorites)
+                    );
+                    setFavorites(updatedFavorites);
+                  }}
+                >
+                  {cell.column.id === "favorites" && (
+                    <div className="cursor-pointer">
+                      {cell.getValue() ? "⭐" : "✰"}
+                    </div>
+                  )}
+                  {cell.column.id !== "favorites" &&
+                    flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
