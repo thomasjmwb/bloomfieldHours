@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/bloomfieldHours/static/css/main.042cc223.css",
-    "main.js": "/bloomfieldHours/static/js/main.d25c4231.js",
+    "main.js": "/bloomfieldHours/static/js/main.e2e5a8a7.js",
     "static/js/453.89ab499e.chunk.js": "/bloomfieldHours/static/js/453.89ab499e.chunk.js",
     "index.html": "/bloomfieldHours/index.html",
     "main.042cc223.css.map": "/bloomfieldHours/static/css/main.042cc223.css.map",
-    "main.d25c4231.js.map": "/bloomfieldHours/static/js/main.d25c4231.js.map",
+    "main.e2e5a8a7.js.map": "/bloomfieldHours/static/js/main.e2e5a8a7.js.map",
     "453.89ab499e.chunk.js.map": "/bloomfieldHours/static/js/453.89ab499e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.042cc223.css",
-    "static/js/main.d25c4231.js"
+    "static/js/main.e2e5a8a7.js"
   ]
 }
